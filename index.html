@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>5 Gombos Számláló + Visszaszámláló</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  body { 
+    font-family: sans-serif; 
+    text-align: center; 
+    margin-top: 20px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  button {
+    font-size: 2rem;
+    padding: 15px 40px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.1s, background-color 0.2s;
+  }
+  button:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+  }
+  button:active { 
+    transform: scale(1.2); 
+    background-color: #45a049; 
+  }
+  .count {
+    font-size: 4rem;
+    transition: transform 0.2s;
+  }
+  .pop { transform: scale(1.5); }
+
+  #countdown {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #d32f2f;
+  }
+</style>
+</head>
+<body>
+
+<h1>Irinyi Károly Általános Iskola - Digitális témahét</h1>
+<h2>A "Béla vagyok" projekt vége: március 29. 23:59:59</h2>
+<div id="countdown">A "Béla vagyok" projekt vége: -- nap --:--:--</div>
+<h1> </h1>
+
+<div class="button-container">
+  <button id="btn1">5.a</button>
+  <div id="count1" class="count">0</div>
+</div>
+
+<div class="button-container">
+  <button id="btn2">5.b</button>
+  <div id="count2" class="count">0</div>
+</div>
+
+<div class="button-container">
+  <button id="btn3">6.a</button>
+  <div id="count3" class="count">0</div>
+</div>
+
+<div class="button-container">
+  <button id="btn4">7.a</button>
+  <div id="count4" class="count">0</div>
+</div>
+
+<div class="button-container">
+  <button id="btn5">8.a</button>
+  <div id="count5" class="count">0</div>
+</div>
+
+<script>
+  // 🔹 Cseréld a saját Firebase projekted adataira 🔹
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBjqLD8Ez_tRb34uhBlwqZkjbxaOUPUUxA",
+  authDomain: "gomb-4c5b8.firebaseapp.com",
+  databaseURL: "https://gomb-4c5b8-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "gomb-4c5b8",
+  storageBucket: "gomb-4c5b8.firebasestorage.app",
+  messagingSenderId: "1009320829307",
+  appId: "1:1009320829307:web:f6add2b23ee8a13dd69dde",
+  measurementId: "G-C24QD2R2LK"
+};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Gombok és számlálók
+  const buttons = [
+    {btn: 'btn1', count: 'count1', ref: 'clicks_version1'},
+    {btn: 'btn2', count: 'count2', ref: 'clicks_version2'},
+    {btn: 'btn3', count: 'count3', ref: 'clicks_version3'},
+    {btn: 'btn4', count: 'count4', ref: 'clicks_version4'},
+    {btn: 'btn5', count: 'count5', ref: 'clicks_version5'},
+  ];
+
+  buttons.forEach(item => {
+    const clickRef = db.ref(item.ref);
+    const btnEl = document.getElementById(item.btn);
+    const countEl = document.getElementById(item.count);
+
+    btnEl.addEventListener('click', () => {
+      clickRef.transaction(current => (current || 0) + 1);
+    });
+
+    clickRef.on('value', snapshot => {
+      const newCount = snapshot.val() || 0;
+      if (newCount != parseInt(countEl.innerText)) {
+        countEl.innerText = newCount;
+        countEl.classList.add('pop');
+        setTimeout(() => countEl.classList.remove('pop'), 200);
+      }
+    });
+  });
+
+  // 🔹 Visszaszámláló március 29. éjfélig
+  const countdownEl = document.getElementById('countdown');
+  const targetDate = new Date('2026-03-29T23:59:59'); // UTC vagy helyi időzóna szerint
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = targetDate - now;
+    if(diff <= 0) {
+      countdownEl.innerText = "Idő lejárt!";
+      // gombok letiltása
+      buttons.forEach(item => document.getElementById(item.btn).disabled = true);
+      clearInterval(countdownInterval);
+      return;
+    }
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const minutes = Math.floor((diff / (1000*60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    countdownEl.innerText = `Visszaszámlálás: ${days} nap ${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+  }
+
+  updateCountdown();
+  const countdownInterval = setInterval(updateCountdown, 1000);
+
+</script>
+
+</body>
+</html>

@@ -103,10 +103,10 @@ const firebaseConfig = {
 
   // Gombok és számlálók
   const buttons = [
-    {btn: 'btn1', count: 'count1', ref: 'clicks_version1'},
-    {btn: 'btn2', count: 'count2', ref: 'clicks_version2'},
-    {btn: 'btn3', count: 'count3', ref: 'clicks_version3'},
-    {btn: 'btn4', count: 'count4', ref: 'clicks_version4'},
+    {btn: 'btn1', count: 'count1', ref: 'clicks_version1', value:1},
+    {btn: 'btn2', count: 'count2', ref: 'clicks_version2', value:1},
+    {btn: 'btn3', count: 'count3', ref: 'clicks_version3', value:1},
+    {btn: 'btn4', count: 'count4', ref: 'clicks_version4', value:1},
     {btn: 'btn5', count: 'count5', ref: 'clicks_version5', value:2},
   ];
 
@@ -116,7 +116,7 @@ const firebaseConfig = {
     const countEl = document.getElementById(item.count);
 
     btnEl.addEventListener('click', () => {
-      clickRef.transaction(current => (current || 0) + 1);
+      clickRef.transaction(current => (current || 0) + item.value);
     });
 
     clickRef.on('value', snapshot => {

@@ -124,7 +124,7 @@ const firebaseConfig = {
       if (newCount != parseInt(countEl.innerText)) {
         countEl.innerText = newCount;
         countEl.classList.add('pop');
-        setTimeout(() => countEl.classList.remove('pop'), 20);
+        setTimeout(() => countEl.classList.remove('pop'), 200);
       }
     });
   });
@@ -151,7 +151,7 @@ const firebaseConfig = {
   }
 
   updateCountdown();
-  const countdownInterval = setInterval(updateCountdown, 1000);
+  const countdownInterval = setInterval(updateCountdown, 5000);
 
 </script>
 
